@@ -8,8 +8,4 @@ class Subject {
     required this.imageURL,
     required this.isSelected,
   });
-
-  void copyWith(bool value) {
-    isSelected = value;
-  }
 }

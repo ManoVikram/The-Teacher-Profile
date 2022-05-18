@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import './subjects_taught_screen.dart';
 import '../models/classes_and_subjects.dart';
 import '../models/Class.dart';
+import '../models/subjects_you_teach.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int numberOfCoosenSubjects = 0;
 
-  late ClassesAndSubjects classesAndSubjectsProvider;
+  late ClassesAndSubjects classesAndSubjectsProvider = ClassesAndSubjects();
 
   // bool isRebuilt = false;
 
@@ -29,8 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       classesAndSubjectsProvider =
-          await Provider.of<ClassesAndSubjects>(context, listen: false);
+          Provider.of<ClassesAndSubjects>(context, listen: false);
+      await Future.delayed(const Duration(milliseconds: 2000));
       await classesAndSubjectsProvider.fetchClasses();
+      setState(() {});
     });
   }
 
@@ -51,8 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             minimumSize: Size(size.width - 50, 56.0),
-            side: BorderSide.none,
-            primary: numberOfCoosenSubjects > 0 ? const Color(0xFF270F36) : Colors.grey[400],
+            primary: numberOfCoosenSubjects > 0
+                ? const Color(0xFF270F36)
+                : Colors.grey[400],
           ),
           onPressed: () {
             if (numberOfCoosenSubjects > 0) {
@@ -166,9 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             physics: const BouncingScrollPhysics(),
                             itemCount: classes[index].subjects.length,
                             itemBuilder: (context, subjectsIndex) {
-                              // final bool? x = checkedIndexMap[index]
-                              //     ?.contains(subjectsIndex);
-
                               return Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Container(
@@ -221,33 +222,64 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   MainAxisAlignment.start,
                                               children: [
                                                 Checkbox(
-                                                  /* value: x!,
-                                                onChanged: (checkValue) {
-                                                  if (checkedIndexMap[index] ==
-                                                      []) {
-                                                    checkedIndexMap[index] = [
-                                                      subjectsIndex
-                                                    ];
-                                                  } else {
-                                                    checkedIndexMap[index]
-                                                        ?.add(subjectsIndex);
-                                                  }
-                                                }, */
                                                   value: classesAndSubjects
                                                       .classes[index]
                                                       .subjects[subjectsIndex]
                                                       .isSelected,
                                                   onChanged: (value) {
-                                                    print(classesAndSubjects
-                                                        .classes[index]
-                                                        .subjects[subjectsIndex]
-                                                        .isSelected);
-
                                                     if (value == true) {
                                                       numberOfCoosenSubjects++;
+
+                                                      subjectsYouTeach.add(
+                                                        SubjectsYouTeach(
+                                                          classNumber:
+                                                              classesAndSubjects
+                                                                  .classes[
+                                                                      index]
+                                                                  .standartName,
+                                                          subjectName:
+                                                              classesAndSubjects
+                                                                  .classes[
+                                                                      index]
+                                                                  .subjects[
+                                                                      subjectsIndex]
+                                                                  .name,
+                                                        ),
+                                                      );
                                                     } else {
                                                       numberOfCoosenSubjects--;
+
+                                                      int removeIndex = -1;
+
+                                                      for (int i = 0;
+                                                          i <
+                                                              subjectsYouTeach
+                                                                  .length;
+                                                          i++) {
+                                                        if (subjectsYouTeach[i]
+                                                                    .classNumber ==
+                                                                classesAndSubjects
+                                                                    .classes[
+                                                                        index]
+                                                                    .standartName &&
+                                                            subjectsYouTeach[i]
+                                                                    .subjectName ==
+                                                                classesAndSubjects
+                                                                    .classes[
+                                                                        index]
+                                                                    .subjects[
+                                                                        subjectsIndex]
+                                                                    .name) {
+                                                          removeIndex = i;
+                                                          break;
+                                                        }
+                                                      }
+
+                                                      subjectsYouTeach.removeAt(
+                                                          removeIndex);
                                                     }
+
+                                                    print(subjectsYouTeach);
 
                                                     setState(() {
                                                       classesAndSubjects
@@ -256,11 +288,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               subjectsIndex]
                                                           .isSelected = value!;
                                                     });
-
-                                                    print(classesAndSubjects
-                                                        .classes[index]
-                                                        .subjects[subjectsIndex]
-                                                        .isSelected);
                                                   },
                                                 ),
                                                 Expanded(
@@ -270,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         .subjects[subjectsIndex]
                                                         .name,
                                                     overflow:
-                                                        TextOverflow.ellipsis,
+                                                        TextOverflow.clip,
                                                     style: const TextStyle(
                                                       fontSize: 16.0,
                                                       fontWeight:
@@ -290,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(height: 30.0),
+                        const SizedBox(height: 60.0),
                       ],
                     );
                   },

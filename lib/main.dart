@@ -20,18 +20,9 @@ class _MyAppState extends State<MyApp> {
       child: const MaterialApp(
         title: "Teacher Profile",
         debugShowCheckedModeBanner: false,
-        home: TeacherProfile(),
+        home: HomeScreen(),
       ),
     );
-  }
-}
-
-class TeacherProfile extends StatelessWidget {
-  const TeacherProfile({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const HomeScreen();
   }
 }
 
