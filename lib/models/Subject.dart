@@ -6,7 +6,7 @@ class Subject {
   Subject({
     required this.name,
     required this.imageURL,
-    this.isSelected = false,
+    required this.isSelected,
   });
 
   void copyWith(bool value) {

@@ -6,9 +6,9 @@ import './Class.dart';
 import './Subject.dart';
 
 class ClassesAndSubjects extends ChangeNotifier {
-  List<Class> _classes = [];
+  List<Class> classes = [];
 
-  List<Class> get classes => [..._classes];
+  // List<Class> get classes => [..._classes];
 
   Future<void> fetchClasses() async {
     final String data = await rootBundle.loadString("assets/assets.json");
@@ -25,6 +25,7 @@ class ClassesAndSubjects extends ChangeNotifier {
           Subject(
             name: subjectData["subject_name"],
             imageURL: subjectData["subject_image"],
+            isSelected: false,
           ),
         );
       }
@@ -39,7 +40,7 @@ class ClassesAndSubjects extends ChangeNotifier {
 
     print(loadedClasses);
 
-    _classes = loadedClasses;
+    classes = loadedClasses;
 
     notifyListeners();
   }

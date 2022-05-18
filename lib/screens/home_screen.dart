@@ -16,18 +16,27 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isCheckBoxOn = false;
 
+  int numberOfCoosenSubjects = 0;
+
+  late ClassesAndSubjects classesAndSubjectsProvider;
+
   // bool isRebuilt = false;
 
   // Map<int, List<int>> checkedIndexMap = {};
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      classesAndSubjectsProvider =
+          await Provider.of<ClassesAndSubjects>(context, listen: false);
+      await classesAndSubjectsProvider.fetchClasses();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-
-    final ClassesAndSubjects classesAndSubjectsProvider =
-        Provider.of<ClassesAndSubjects>(context);
-
-    classesAndSubjectsProvider.fetchClasses();
 
     List<Class> classes = classesAndSubjectsProvider.classes;
 
@@ -43,10 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             minimumSize: Size(size.width - 50, 56.0),
             side: BorderSide.none,
-            primary: isCheckBoxOn ? const Color(0xFF270F36) : Colors.grey[400],
+            primary: numberOfCoosenSubjects > 0 ? const Color(0xFF270F36) : Colors.grey[400],
           ),
           onPressed: () {
-            if (isCheckBoxOn) {
+            if (numberOfCoosenSubjects > 0) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -196,19 +205,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       Expanded(
                                         flex: 2,
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.vertical(
-                                              bottom: Radius.circular(10.0),
+                                        child: Consumer<ClassesAndSubjects>(
+                                          builder: (context, classesAndSubjects,
+                                                  child) =>
+                                              Container(
+                                            decoration: const BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                bottom: Radius.circular(10.0),
+                                              ),
                                             ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Checkbox(
-                                                /* value: x!,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Checkbox(
+                                                  /* value: x!,
                                                 onChanged: (checkValue) {
                                                   if (checkedIndexMap[index] ==
                                                       []) {
@@ -220,28 +233,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ?.add(subjectsIndex);
                                                   }
                                                 }, */
-                                                value: isCheckBoxOn,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    isCheckBoxOn = value!;
-                                                  });
-                                                },
-                                              ),
-                                              Expanded(
-                                                child: Text(
-                                                  // "English",
-                                                  classes[index]
+                                                  value: classesAndSubjects
+                                                      .classes[index]
                                                       .subjects[subjectsIndex]
-                                                      .name,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                    fontSize: 16.0,
-                                                    fontWeight: FontWeight.bold,
+                                                      .isSelected,
+                                                  onChanged: (value) {
+                                                    print(classesAndSubjects
+                                                        .classes[index]
+                                                        .subjects[subjectsIndex]
+                                                        .isSelected);
+
+                                                    if (value == true) {
+                                                      numberOfCoosenSubjects++;
+                                                    } else {
+                                                      numberOfCoosenSubjects--;
+                                                    }
+
+                                                    setState(() {
+                                                      classesAndSubjects
+                                                          .classes[index]
+                                                          .subjects[
+                                                              subjectsIndex]
+                                                          .isSelected = value!;
+                                                    });
+
+                                                    print(classesAndSubjects
+                                                        .classes[index]
+                                                        .subjects[subjectsIndex]
+                                                        .isSelected);
+                                                  },
+                                                ),
+                                                Expanded(
+                                                  child: Text(
+                                                    // "English",
+                                                    classes[index]
+                                                        .subjects[subjectsIndex]
+                                                        .name,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
