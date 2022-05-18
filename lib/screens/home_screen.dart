@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
+import './subjects_taught_screen.dart';
+import '../models/classes_and_subjects.dart';
+import '../models/Class.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,9 +16,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isCheckBoxOn = false;
 
+  // bool isRebuilt = false;
+
+  // Map<int, List<int>> checkedIndexMap = {};
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+
+    final ClassesAndSubjects classesAndSubjectsProvider =
+        Provider.of<ClassesAndSubjects>(context);
+
+    classesAndSubjectsProvider.fetchClasses();
+
+    List<Class> classes = classesAndSubjectsProvider.classes;
 
     return Scaffold(
       floatingActionButton: Padding(
@@ -29,7 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
             side: BorderSide.none,
             primary: isCheckBoxOn ? const Color(0xFF270F36) : Colors.grey[400],
           ),
-          onPressed: () {},
+          onPressed: () {
+            if (isCheckBoxOn) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SubjectsTaughtScreen(),
+                ),
+              );
+            }
+          },
           child: const Text(
             "Continue",
             style: TextStyle(
@@ -98,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 5,
+                  itemCount: classes.length,
                   itemBuilder: (context, index) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              "${index + 1}th",
+                              // "${index + 1}th",
+                              classes[index].standartName,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16.0,
@@ -129,13 +155,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
-                            itemCount: 5,
-                            itemBuilder: (context, index) {
+                            itemCount: classes[index].subjects.length,
+                            itemBuilder: (context, subjectsIndex) {
+                              // final bool? x = checkedIndexMap[index]
+                              //     ?.contains(subjectsIndex);
+
                               return Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Container(
-                                  height: 200.0,
-                                  width: 154.0,
+                                  height: 220.0,
+                                  width: 160.0,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: const [
@@ -155,8 +184,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(10.0),
-                                            child: Image.asset(
-                                              "assets/images/English.png",
+                                            child: Image.network(
+                                              // "assets/images/English.png",
+                                              classes[index]
+                                                  .subjects[subjectsIndex]
+                                                  .imageURL,
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -176,6 +208,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 MainAxisAlignment.start,
                                             children: [
                                               Checkbox(
+                                                /* value: x!,
+                                                onChanged: (checkValue) {
+                                                  if (checkedIndexMap[index] ==
+                                                      []) {
+                                                    checkedIndexMap[index] = [
+                                                      subjectsIndex
+                                                    ];
+                                                  } else {
+                                                    checkedIndexMap[index]
+                                                        ?.add(subjectsIndex);
+                                                  }
+                                                }, */
                                                 value: isCheckBoxOn,
                                                 onChanged: (value) {
                                                   setState(() {
@@ -183,11 +227,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   });
                                                 },
                                               ),
-                                              const Text(
-                                                "English",
-                                                style: TextStyle(
-                                                  fontSize: 16.0,
-                                                  fontWeight: FontWeight.bold,
+                                              Expanded(
+                                                child: Text(
+                                                  // "English",
+                                                  classes[index]
+                                                      .subjects[subjectsIndex]
+                                                      .name,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
                                             ],
