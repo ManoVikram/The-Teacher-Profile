@@ -1,16 +1,5 @@
-# teacher_profile_app
+# The Teacher Profile
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+A simple UI which gets built based on the data from the local JSON file!
+![Homepage](https://user-images.githubusercontent.com/42974191/169588361-dfce0351-e408-4db6-8d68-408e507a2950.png)
+![Select class   subjects](https://user-images.githubusercontent.com/42974191/169588364-1fa3eb5c-f0d9-4438-a862-f819d673b257.png)
